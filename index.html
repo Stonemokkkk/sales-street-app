@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="description" content="Sales Street Kit — 幫街頭sales搵廁所、工作空間、充電點">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Sales Street Kit</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <h1 class="brand">📍 Sales Street Kit</h1>
+        <button id="locateBtn" class="locate-btn" onclick="locateUser(false)">🎯 我的位置</button>
+    </header>
+
+    <!-- Tabs -->
+    <nav class="tabs">
+        <button class="tab active" data-tab="toilets">🚻 廁所</button>
+        <button class="tab" data-tab="freespace">💺 工作空間</button>
+        <button class="tab" data-tab="charging">🔋 充電</button>
+        <button class="tab" data-tab="premium">⭐ 靚廁所</button>
+    </nav>
+
+    <!-- Search Bar -->
+    <div class="search-section">
+        <div class="search-row">
+            <input type="text" id="searchInput" class="search-input" placeholder="搜尋名稱、地址、備註...">
+            <select id="districtSelect" class="district-select">
+                <option value="">全部地區</option>
+            </select>
+        </div>
+        <div class="filter-row">
+            <div class="filter-chips">
+                <button class="chip active" data-filter="all">全部</button>
+                <button class="chip" data-filter="free">免費</button>
+                <button class="chip" data-filter="paid">收費</button>
+            </div>
+            <button id="sortToggle" class="sort-toggle" onclick="toggleSort()">↕️ 按距離</button>
+        </div>
+    </div>
+
+    <!-- Map -->
+    <div id="map" class="map"></div>
+
+    <!-- List Panel -->
+    <div id="listPanel" class="list-panel"></div>
+
+    <!-- FAB -->
+    <button id="fabBtn" class="fab" onclick="openReportModal()">＋ 報料</button>
+
+    <!-- Report Modal -->
+    <div id="reportModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>報料</h2>
+                <button class="modal-close" onclick="closeReportModal()">✕</button>
+            </div>
+            <form id="reportForm" onsubmit="submitReport(event)">
+                <div class="form-group">
+                    <label>類別</label>
+                    <select name="layer" required>
+                        <option value="toilets">🚻 廁所</option>
+                        <option value="freespace">💺 工作空間</option>
+                        <option value="charging">🔋 充電</option>
+                        <option value="premium">⭐ 靚廁所</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>名稱</label>
+                    <input type="text" name="name" required placeholder="例如：中環街市公廁">
+                </div>
+                <div class="form-group">
+                    <label>地區</label>
+                    <select name="district" required>
+                        <option value="中西區">中西區</option>
+                        <option value="灣仔區">灣仔區</option>
+                        <option value="油尖旺區">油尖旺區</option>
+                        <option value="九龍城區">九龍城區</option>
+                        <option value="黃大仙區">黃大仙區</option>
+                        <option value="觀塘區">觀塘區</option>
+                        <option value="深水埗區">深水埗區</option>
+                        <option value="葵青區">葵青區</option>
+                        <option value="荃灣區">荃灣區</option>
+                        <option value="屯門區">屯門區</option>
+                        <option value="元朗區">元朗區</option>
+                        <option value="北區">北區</option>
+                        <option value="大埔區">大埔區</option>
+                        <option value="沙田區">沙田區</option>
+                        <option value="西貢區">西貢區</option>
+                        <option value="離島區">離島區</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>類型</label>
+                    <select name="type" required>
+                        <option value="free">免費</option>
+                        <option value="paid">收費</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label> latitude</label>
+                        <input type="number" name="lat" step="any" required placeholder="22.28405">
+                    </div>
+                    <div class="form-group">
+                        <label> longitude</label>
+                        <input type="number" name="lng" step="any" required placeholder="114.15453">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>營業時間</label>
+                    <input type="text" name="hours" placeholder="10:00 - 22:00">
+                </div>
+                <div class="form-group">
+                    <label>備註</label>
+                    <textarea name="note" rows="3" placeholder="補充資料..."></textarea>
+                </div>
+                <div class="form-row">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="wifi"> 📶 WiFi
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="power"> 🔌 插座
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="accessible"> ♿ 無障礙
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="baby"> 👶 育嬰
+                    </label>
+                </div>
+                <button type="submit" class="submit-btn">提交報料</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered:', reg.scope))
+                .catch(err => console.error('SW registration failed:', err));
+        }
+    </script>
+</body>
+</html>
