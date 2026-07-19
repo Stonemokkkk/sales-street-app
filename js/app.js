@@ -400,6 +400,9 @@ async function submitReport(e) {
     };
 
     try {
+        console.log('Submitting to:', `${SUPABASE_URL}/rest/v1/places`);
+        console.log('Data:', data);
+
         const response = await fetch(`${SUPABASE_URL}/rest/v1/places`, {
             method: 'POST',
             headers: {
@@ -410,13 +413,18 @@ async function submitReport(e) {
             body: JSON.stringify(data)
         });
 
+        console.log('Response status:', response.status);
+
         if (response.ok) {
             alert('報料已提交，等待審核');
             closeReportModal();
         } else {
-            alert('提交失敗，請稍後再試');
+            const errorText = await response.text();
+            console.error('Error response:', errorText);
+            alert('提交失敗：' + errorText);
         }
     } catch (error) {
+        console.error('Fetch error:', error);
         alert('提交失敗：' + error.message);
     }
 }
