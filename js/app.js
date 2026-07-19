@@ -383,19 +383,32 @@ async function submitReport(e) {
     }
 
     const form = e.target;
+
+    // Validate lat/lng
+    const lat = parseFloat(form.lat.value);
+    const lng = parseFloat(form.lng.value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert('請輸入有效的 latitude 和 longitude');
+        return;
+    }
+
+    if (lat < 22.15 || lat > 22.56 || lng < 113.84 || lng > 114.40) {
+        alert('座標超出香港範圍');
+        return;
+    }
+
     const data = {
         layer: form.layer.value,
         name: form.name.value,
         district: form.district.value,
         type: form.type.value,
-        lat: parseFloat(form.lat.value),
-        lng: parseFloat(form.lng.value),
+        lat: lat,
+        lng: lng,
         hours: form.hours.value || null,
         note: form.note.value || null,
         wifi: form.wifi.checked,
         power: form.power.checked,
-        accessible: form.accessible.checked,
-        baby: form.baby.checked,
         approved: false
     };
 

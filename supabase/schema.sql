@@ -10,6 +10,8 @@ create table public.places (
   hours text,
   wifi boolean default false,
   power boolean default false,
+  accessible boolean default false,
+  baby boolean default false,
   rating double precision,
   note text,
   lat double precision not null,
