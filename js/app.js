@@ -409,6 +409,8 @@ async function submitReport(e) {
         note: form.note.value || null,
         wifi: form.wifi.checked,
         power: form.power.checked,
+        accessible: form.accessible.checked,
+        baby: form.baby.checked,
         approved: false
     };
 
